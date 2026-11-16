@@ -11,7 +11,7 @@ Week 3 of the discovery systems project. This repository compares click predicti
 | Paced versus unpaced auction replay | Mean clicks 562.0 to 753.3 and early budget depletion 98.7% to 19.3% across three seeds |
 | Contextual Docker service | 0.477 ms scorer-plus-auction p99 and 3.703 ms HTTP p99, with 1,000 requests at 50.04 achieved QPS and zero errors |
 
-These results use generated data and the fictional four-sponsor service catalog. See the [report](W03_Ads_Report.md) and [verified workflow](https://github.com/xyb271828/ads-ctr-marketplace/actions/runs/43970089759). The real-data workflow and its results are documented below.
+These results use generated data and the fictional four-sponsor service catalog. See the [report](W03_Ads_Report.md) and [verified workflow](https://github.com/xyb271828/ads-ctr-marketplace/actions/runs/43970089759).
 
 ## Reproduce with generated data
 
@@ -28,6 +28,8 @@ python -m ads.marketplace > runs/marketplace.json
 Pass `--full` to run GBDT+LR and DeepFM; the hashed LR and all calibration experiments also run with `requirements.txt` alone. To open the notebooks, install JupyterLab and Matplotlib in the same environment.
 
 ## Public CTR benchmark
+
+On **3,615,995 real Criteo impressions**, DeepFM reduced held-out LogLoss from **0.14358 to 0.13596 (5.31%)** versus hashed LR. AUC increased from **0.73690 to 0.74432**. Platt-calibrated hashed LR reached **0.13707** LogLoss. The final test had **594,104 impressions** from a later calendar day. [Full analysis](W03_Ads_Report.md#real-data-ctr-benchmark) · [Verified run](https://github.com/xyb271828/ads-ctr-marketplace/actions/runs/43976259862)
 
 Use dated shards from [Criteo 1TB Click Logs](https://huggingface.co/datasets/criteo/CriteoClickLogs). The downloader selects the five shards for the reproducible evaluation. If you already have the files, pass their directory directly.
 

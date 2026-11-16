@@ -2,7 +2,7 @@
 
 ## Experimental design
 
-The pipeline splits the labeled Criteo source into consecutive 70/15/15 row windows before configured uniform sampling. It streams TSV in fixed batches and writes split files to disk. Continuous values use signed log1p; missing numeric values become zero. Field-qualified categories use a train-only count-min sketch and a minimum observed frequency of three. A sketch collision can retain an otherwise rare category. The hash collision diagnostic uses up to approximately 100,000 distinct feature tokens from the training prefix. The hash space uses 2^20 buckets.
+The legacy TSV path splits the labeled source into consecutive 70/15/15 row windows. The Parquet path assigns dates to distinct splits and samples within each split only when requested. It streams TSV in fixed batches and writes split files to disk. Continuous values use signed log1p; missing numeric values become zero. Field-qualified categories use a train-only count-min sketch and a minimum observed frequency of three. A sketch collision can retain an otherwise rare category. The hash collision diagnostic uses up to approximately 100,000 distinct feature tokens from the training prefix. The hash space uses 2^20 buckets.
 
 The candidate models are constant training CTR, hashed logistic regression, LightGBM leaf features followed by logistic regression, and DeepFM. The tree and its leaf LR fit chronologically disjoint portions of the training window. DeepFM selects its checkpoint using validation LogLoss. The test window evaluates all predictions. Normalized entropy divides test LogLoss by the loss of constant training CTR on the same test labels. Contiguous ordered blocks of test rows are sampled jointly for paired LogLoss and NE intervals. AUC measures discrimination, and reliability bins and ECE measure calibration. The code reports observed and predicted CTR for two groups defined by missingness of an anonymous category field.
 
@@ -42,6 +42,30 @@ Correcting the negative-sampling prior restored much of the probability quality 
 
 Eight tests passed. The Docker contextual demo served 1,000 requests without errors at 50.04 achieved QPS. On this Ubuntu GitHub-hosted runner, pCTR plus auction took **0.477 ms p99** and the client observed **3.703 ms HTTP p99**. The demo had four fictional sponsors and a fixed request mix, so the result describes this benchmark only.
 
-## Public-data results pending
+## Real-data CTR benchmark
 
-The labeled original Criteo training file and its row order are required for the 5-million-row benchmark. Public-data scores are pending.
+[GitHub Actions run and full metrics artifact](https://github.com/xyb271828/ads-ctr-marketplace/actions/runs/43976259862) · [Committed metric summary and shard checksums](reports/criteo_temporal_results.json)
+
+The run used all **3,615,995 impressions** in five public [Criteo 1TB Click Logs](https://huggingface.co/datasets/criteo/CriteoClickLogs) Parquet shards, one shard per day. These shards are a subset of the release. The three model families share the same held-out test rows, with training-only feature counts. Platt and isotonic mappings fit only on February 18. GBDT+LR fits up to 200,000 rows per stage and uses February 17 for leaf LR, after fitting trees on February 15–16. DeepFM ran for three epochs with checkpoint selection on validation LogLoss.
+
+| Split | Dates in February 2015 | Impressions | Observed CTR |
+| --- | --- | ---: | ---: |
+| Train | 15–17 | 2,315,220 | 3.213% |
+| Validation | 18 | 706,671 | 3.170% |
+| Test | 19 | 594,104 | 3.461% |
+
+| Model or calibration variant | LogLoss | AUC | NE | ECE |
+| --- | ---: | ---: | ---: | ---: |
+| Constant training CTR | 0.15050 | 0.50000 | 1.00000 | 0.247 pp |
+| Hashed LR | 0.14358 | 0.73690 | 0.95402 | 1.614 pp |
+| Hashed LR + Platt | 0.13707 | 0.73690 | 0.91077 | 0.242 pp |
+| Hashed LR + isotonic | 0.13717 | 0.73672 | 0.91138 | 0.232 pp |
+| Negative-sampled LR | 0.15211 | 0.73738 | 1.01064 | 3.632 pp |
+| Negative-sampled LR + prior correction | 0.14244 | 0.73738 | 0.94643 | 1.397 pp |
+| GBDT + LR | 0.14120 | 0.70618 | 0.93818 | 0.488 pp |
+| DeepFM | 0.13596 | 0.74432 | 0.90339 | 0.090 pp |
+
+- **DeepFM** had the lowest held-out LogLoss and highest AUC. LogLoss improved **5.31%** relative to hashed LR and **9.66%** relative to constant training CTR. The paired change versus hashed LR was −0.00762, with a 95% block-bootstrap interval of [−0.00804, −0.00723].
+- **Platt calibration** improved hashed LR LogLoss by **4.53%**, with unchanged AUC and ECE decreasing from 1.614 to 0.242 percentage points. Its LogLoss was 0.00111 above DeepFM. The benchmark reports paired intervals versus hashed LR, so the two leading variants have no direct paired interval in this run.
+- **Negative-sampling prior correction** lowered LogLoss from 0.15211 to 0.14244 and ECE from 3.632 to 1.397 percentage points, with unchanged AUC. Calibration conclusions refer to the published dataset’s sampled distribution.
+- **CPU batch scoring** took 90.6 ms for raw hashed LR and 368.9 ms for DeepFM across 594,104 already-encoded test rows in this run. These timers measure model batch scoring. Platt calibration and service overhead are outside the hashed LR timer. The results cover one held-out day and one shard per date, so neither the intervals nor the batch timing establish temporal stability or a serving SLA.
