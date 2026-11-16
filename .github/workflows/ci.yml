@@ -30,6 +30,7 @@ jobs:
           curl -fsS --retry 15 --retry-connrefused http://127.0.0.1:8000/health
           python -m ads.load_test --requests 1000 --qps 50 > runs/latency.json
           lscpu > runs/cpu.txt
+      - run: python -m ads.ci_summary | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
           name: week3-synthetic-results

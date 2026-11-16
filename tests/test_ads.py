@@ -7,7 +7,7 @@ import numpy as np
 from fastapi.testclient import TestClient
 
 from ads.auction import Bid, rank
-from ads.calibration import correct_negative_sampling
+from ads.calibration import correct_negative_sampling, pointwise_loss
 from ads.ctr import benchmark
 from ads.data import fixture, read_rows, prepare
 from ads.marketplace import replay
@@ -40,6 +40,10 @@ class AdsTests(unittest.TestCase):
     def test_negative_sampling_prior(self):
         np.testing.assert_allclose(correct_negative_sampling(np.array([0., .5, 1.]), .1),
                                    [0, 1/11, 1])
+
+    def test_float32_probability_endpoints(self):
+        values = pointwise_loss(np.array([0, 1]), np.array([1., 0.], np.float32))
+        self.assertTrue(np.isfinite(values).all())
 
     def test_ordered_split(self):
         with tempfile.TemporaryDirectory() as tmp:

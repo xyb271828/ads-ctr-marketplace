@@ -10,7 +10,7 @@ def correct_negative_sampling(proba, keep):
 
 
 def pointwise_loss(labels, probabilities):
-    p = np.clip(probabilities, 1e-12, 1-1e-12)
+    p = np.clip(np.asarray(probabilities, dtype=np.float64), 1e-12, 1-1e-12)
     return -np.where(labels, np.log(p), np.log1p(-p))
 
 
@@ -19,7 +19,7 @@ def baseline_loss(labels, train_ctr):
 
 
 def summarize(labels, proba, train_ctr, bins=10):
-    loss = float(log_loss(labels, np.clip(proba, 1e-12, 1-1e-12), labels=[0, 1]))
+    loss = float(log_loss(labels, np.clip(np.asarray(proba, dtype=np.float64), 1e-12, 1-1e-12), labels=[0, 1]))
     ids = np.minimum((proba * bins).astype(int), bins - 1)
     reliability = []
     for i in range(bins):
