@@ -1,0 +1,9 @@
+# Week 3 engineering log
+
+I built a CTR evaluation pipeline that uses contiguous source windows and preserves the same test rows across every model. Sparse hashed logistic regression establishes the baseline. A second model learns boosted decision-tree leaf features and fits logistic regression on a later portion of training. DeepFM uses embeddings to represent feature interactions, and checkpoint selection uses the validation split. I fitted Platt and isotonic calibration on validation and added a separate negative-downsampling experiment to examine how an altered training prior shifts predicted probabilities.
+
+The marketplace replay is independent of the public benchmark. I kept candidate draws and true click outcomes paired across the auction configurations. Uniform probability inflation should cancel in this reserve-CPC formulation because the price divides the competing score by the winner's probability. The targeted inflation arm changes one contextual segment so it can affect auction dynamics even when global ranking metrics appear similar. The simulation also compares unpaced delivery with a simple feedback policy. I recorded exposure and the time when advertisers lose enough balance to participate.
+
+I exposed a small synthetic ad service for integration with lesson search. It uses only topic and grade rather than a user history. The latency harness distinguishes HTTP response time from prediction and auction time. Model choice on the public dataset depends on held-out LogLoss, normalized entropy, calibration and measured resource costs. The synthetic workflow exercises the code path and the report reserves public benchmark figures for a run on the labeled source data.
+
+**Resume bullet draft** — Built a temporal CTR benchmark and quality-weighted GSP replay across 50 synthetic advertisers, comparing calibration, pacing and the effects of probability bias on spend and clicks.

@@ -1,0 +1,40 @@
+name: Week 3 verification
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  synthetic-benchmark:
+    runs-on: ubuntu-latest
+    env:
+      OPENBLAS_NUM_THREADS: 1
+      OMP_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: |
+          pip install torch==2.7.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements-models.txt
+      - run: python -m unittest discover -s tests -v
+      - run: |
+          mkdir -p runs
+          python -m ads.data runs/input.tsv --rows 20000
+          python -m ads.ctr runs/input.tsv --out runs/synthetic --rows 20000 --full --epochs 2
+          python -m ads.marketplace > runs/marketplace.json
+      - run: |
+          docker build -t contextual-ads .
+          docker run -d --name ads -p 127.0.0.1:8000:8000 contextual-ads
+          trap 'docker logs ads; docker rm -f ads' EXIT
+          curl -fsS --retry 15 --retry-connrefused http://127.0.0.1:8000/health
+          python -m ads.load_test --requests 1000 --qps 50 > runs/latency.json
+          lscpu > runs/cpu.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: week3-synthetic-results
+          path: |
+            runs/synthetic/ctr.json
+            runs/marketplace.json
+            runs/latency.json
+            runs/cpu.txt
