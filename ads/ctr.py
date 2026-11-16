@@ -31,7 +31,8 @@ def benchmark(source, output, rows=200_000, seed=42, keep=.25, full=False, epoch
     rarity = fit_rarity(root / "train.tsv")
     hasher = FeatureHasher(n_features=BUCKETS, input_type="dict", dtype=np.float32)
     rng = np.random.default_rng(seed)
-    models = [SGDClassifier(loss="log_loss", random_state=seed, average=True)
+    models = [SGDClassifier(loss="log_loss", learning_rate="constant", eta0=.02,
+                            alpha=1e-5, random_state=seed, average=True)
               for _ in range(2)]
     collision_sample = set()
     probability_inputs = {}

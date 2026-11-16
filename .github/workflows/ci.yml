@@ -27,7 +27,7 @@ jobs:
           docker build -t contextual-ads .
           docker run -d --name ads -p 127.0.0.1:8000:8000 contextual-ads
           trap 'docker logs ads; docker rm -f ads' EXIT
-          curl -fsS --retry 15 --retry-connrefused http://127.0.0.1:8000/health
+          curl -fsS --retry 15 --retry-all-errors --retry-max-time 30 --max-time 2 http://127.0.0.1:8000/health
           python -m ads.load_test --requests 1000 --qps 50 > runs/latency.json
           lscpu > runs/cpu.txt
       - run: python -m ads.ci_summary | tee -a "$GITHUB_STEP_SUMMARY"
