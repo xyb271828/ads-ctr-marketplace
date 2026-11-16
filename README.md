@@ -2,6 +2,17 @@
 
 Week 3 of the discovery systems project. This repository compares click prediction models and calibration on an ordered dataset, then measures the effects of pCTR bias in a separate auction replay. The contextual HTTP demo uses generated topic and grade features.
 
+## Verified synthetic results
+
+| Check | Result |
+| --- | --- |
+| Hashed LR versus fixed training CTR | LogLoss 0.5300 versus 0.5680 on 3,000 held-out synthetic impressions |
+| Negative-sampling correction | LogLoss 0.8503 to 0.5365 at unchanged AUC 0.6812 |
+| Paced versus unpaced auction replay | Mean clicks 562.0 to 753.3 and early budget depletion 98.7% to 19.3% across three seeds |
+| Contextual Docker service | 0.477 ms scorer-plus-auction p99 and 3.703 ms HTTP p99, with 1,000 requests at 50.04 achieved QPS and zero errors |
+
+These results use generated data and the fictional four-sponsor service catalog. See the [report](W03_Ads_Report.md) and [verified workflow](https://github.com/xyb271828/ads-ctr-marketplace/actions/runs/43970089759). The public Criteo run is pending.
+
 ## Reproduce with generated data
 
 ```sh
