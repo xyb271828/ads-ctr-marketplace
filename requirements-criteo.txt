@@ -1,0 +1,2 @@
+-r requirements-models.txt
+pyarrow==20.0.0

@@ -11,7 +11,7 @@ Week 3 of the discovery systems project. This repository compares click predicti
 | Paced versus unpaced auction replay | Mean clicks 562.0 to 753.3 and early budget depletion 98.7% to 19.3% across three seeds |
 | Contextual Docker service | 0.477 ms scorer-plus-auction p99 and 3.703 ms HTTP p99, with 1,000 requests at 50.04 achieved QPS and zero errors |
 
-These results use generated data and the fictional four-sponsor service catalog. See the [report](W03_Ads_Report.md) and [verified workflow](https://github.com/xyb271828/ads-ctr-marketplace/actions/runs/43970089759). The public Criteo run is pending.
+These results use generated data and the fictional four-sponsor service catalog. See the [report](W03_Ads_Report.md) and [verified workflow](https://github.com/xyb271828/ads-ctr-marketplace/actions/runs/43970089759). The real-data workflow and its results are documented below.
 
 ## Reproduce with generated data
 
@@ -29,13 +29,17 @@ Pass `--full` to run GBDT+LR and DeepFM; the hashed LR and all calibration exper
 
 ## Public CTR benchmark
 
-Obtain the original labeled [Criteo Display Advertising Challenge](https://www.kaggle.com/c/criteo-display-ad-challenge/data) training file and keep its original row order. The benchmark splits the labeled source by row ordinal and then samples each window. This is a row-order proxy for time. The Kaggle test file without labels is unused.
+Use dated shards from [Criteo 1TB Click Logs](https://huggingface.co/datasets/criteo/CriteoClickLogs). The downloader selects the five shards for the reproducible evaluation. If you already have the files, pass their directory directly.
 
 ```sh
-python -m ads.ctr data/criteo/train.txt --out runs/criteo --rows 5000000 --full
+pip install -r requirements-criteo.txt
+bash scripts/download_criteo.sh
+python -m ads.ctr data/criteo --out runs/criteo --full
 ```
 
-Run a 200,000-row development benchmark first. Tree fitting and leaf LR fitting each use up to 200,000 rows from disjoint training windows. Results include observed stage-specific fit counts, AUC, LogLoss, normalized entropy, ECE and paired intervals for LogLoss and NE.
+The five dates are February 15–19, 2015. The first three are training, the fourth is validation, and the fifth is test. Each file is named `YYYY-MM-DD.parquet`, with an optional dash and shard suffix for multiple files per day. The benchmark uses every row in the selected files by default. Add `--rows 200000` for a development sample. The manifest records the dates, actual counts, click rates and SHA-256 of each input shard.
+
+The original ordered TSV input remains supported. Paired intervals are relative to hashed LR on the same test impressions. GBDT+LR fits up to 200,000 rows per stage and uses the latest training day to fit the leaf LR for this five-day evaluation.
 
 ## Serve contextual ads
 

@@ -7,11 +7,12 @@ from sklearn.feature_extraction import FeatureHasher
 from sklearn.linear_model import LogisticRegression
 
 
-def train_gbdt_lr(x, y, test, seed, cap=200_000):
+def train_gbdt_lr(x, y, test, seed, cap=200_000, cut=None):
     import lightgbm as lgb
 
     rng = np.random.default_rng(seed)
-    cut = int(.7 * len(y))
+    if cut is None or not 0 < cut < len(y):
+        cut = int(.7 * len(y))
     a = np.sort(rng.choice(cut, min(cut, cap), replace=False))
     b = cut + np.sort(rng.choice(len(y)-cut, min(len(y)-cut, cap), replace=False))
     tree = lgb.LGBMClassifier(n_estimators=48, num_leaves=31, n_jobs=2,

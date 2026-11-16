@@ -1,0 +1,53 @@
+name: Criteo real-data benchmark
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ads/parquet_data.py'
+      - 'ads/ctr.py'
+      - 'ads/models.py'
+      - 'requirements-criteo.txt'
+      - 'scripts/download_criteo.sh'
+      - 'tests/test_parquet.py'
+      - '.github/workflows/criteo.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  temporal-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      OPENBLAS_NUM_THREADS: 1
+      OMP_NUM_THREADS: 1
+      PYTHONUNBUFFERED: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: |
+          pip install torch==2.7.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements-criteo.txt
+      - run: python -m unittest discover -s tests -v
+      - run: bash scripts/download_criteo.sh
+      - run: python -m ads.ctr data/criteo --out runs/criteo --full
+      - name: Print compact benchmark results
+        run: |
+          python - <<'PY'
+          import json
+          with open("runs/criteo/ctr.json") as f:
+              report = json.load(f)
+          keys = ("log_loss", "ne", "auc", "ece", "observed_ctr", "predicted_ctr",
+                  "paired_vs_lr", "test_scoring_ms", "fit_rows_tree", "fit_rows_leaf_lr")
+          report["models"] = {name: {k: row[k] for k in keys if k in row}
+                              for name, row in report["models"].items()}
+          print("CRITEO_RESULT " + json.dumps(report))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: criteo-temporal-results
+          path: |
+            runs/criteo/ctr.json
+            runs/criteo/splits/manifest.json

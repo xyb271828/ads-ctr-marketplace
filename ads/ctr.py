@@ -19,15 +19,22 @@ from ads.data import NAMES, batches, encode, fit_rarity, prepare
 BUCKETS = 2**20
 
 
-def benchmark(source, output, rows=200_000, seed=42, keep=.25, full=False, epochs=3):
+def benchmark(source, output, rows=None, seed=42, keep=.25, full=False, epochs=3):
     if not 0 < keep <= 1 or epochs < 1:
         raise ValueError("Expected negative keep in (0, 1] and at least one epoch")
     output = Path(output)
     root = output / "splits"
-    manifest = prepare(source, root, rows, seed)
+    source = Path(source)
+    if source.is_dir():
+        from ads.parquet_data import prepare_parquet
+
+        manifest = prepare_parquet(source, root, rows, seed)
+    else:
+        manifest = prepare(source, root, 200_000 if rows is None else rows, seed)
     train_ctr = manifest["windows"]["train"]["ctr"]
     if not 0 < train_ctr < 1:
         raise ValueError("Training window requires both click classes")
+    print("Fitting train-only rarity map", flush=True)
     rarity = fit_rarity(root / "train.tsv")
     hasher = FeatureHasher(n_features=BUCKETS, input_type="dict", dtype=np.float32)
     rng = np.random.default_rng(seed)
@@ -41,6 +48,7 @@ def benchmark(source, output, rows=200_000, seed=42, keep=.25, full=False, epoch
     train_seconds = 0.
     for split in NAMES:
         n = manifest["windows"][split]["sample_rows"]
+        print(f"Encoding {split}: {n:,} rows", flush=True)
         y, raw, down = np.empty(n, np.int8), np.empty(n), np.empty(n)
         present = np.empty(n, bool)
         if full:
@@ -106,7 +114,12 @@ def benchmark(source, output, rows=200_000, seed=42, keep=.25, full=False, epoch
         from ads.models import train_deepfm, train_gbdt_lr
 
         train, valid, test = (full_inputs[name] for name in NAMES)
-        predictions["gbdt_lr"], stats["gbdt_lr"] = train_gbdt_lr(train[3], train[2], test[3], seed)
+        day_counts = list(manifest["windows"]["train"].get("rows_by_day", {}).values())
+        cut = sum(day_counts[:-1]) if len(day_counts) > 1 else None
+        print("Training GBDT + LR and DeepFM", flush=True)
+        predictions["gbdt_lr"], stats["gbdt_lr"] = train_gbdt_lr(
+            train[3], train[2], test[3], seed, cut=cut
+        )
         predictions["deepfm"], stats["deepfm"] = train_deepfm(train[:3], valid[:3], test[:3], seed, epochs)
     result = {}
     for name, p in predictions.items():
@@ -127,9 +140,10 @@ def benchmark(source, output, rows=200_000, seed=42, keep=.25, full=False, epoch
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("source")
+    parser.add_argument("source", help="Ordered TSV or directory of dated Criteo Parquet shards")
     parser.add_argument("--out", default="runs/ctr")
-    parser.add_argument("--rows", type=int, default=200_000)
+    parser.add_argument("--rows", type=int,
+                        help="Sample size (default: 200,000 for TSV; all selected shards for Parquet)")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--keep", type=float, default=.25)
     parser.add_argument("--full", action="store_true")
