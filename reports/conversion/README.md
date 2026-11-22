@@ -62,7 +62,7 @@ Three tests check as-of label visibility, the horizon-conditional delay CDF, and
 
 ## Limits and next experiment
 
-One user sample, one training snapshot and one two-day test period are evaluated. The hourly bootstrap has 49 blocks and does not fully capture dependencies across hours or repeated conversions. The global delay CDF ignores campaign-specific delays and reporting latency. Absolute probabilities refer to the released sampled distribution. Revenue, CPA and causal lift are unmeasured. A subsequent step is additional temporal snapshots, campaign-stratified delay modeling and real-model serving benchmarks.
+One user sample, one training snapshot and one two-day test period are evaluated. The hourly bootstrap has 49 blocks and does not fully capture dependencies across hours or repeated conversions. The global delay CDF ignores campaign-specific delays and reporting latency. Absolute probabilities refer to the released sampled distribution. Revenue, CPA and causal lift are unmeasured. A subsequent step is additional temporal snapshots, campaign-stratified delay modeling and sustained serving benchmarks. The first [real-model HTTP deployment and load test](../serving/README.md) now has a reproducible CPU container workflow.
 
 ## Source and citation
 

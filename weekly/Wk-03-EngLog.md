@@ -9,3 +9,7 @@ I exposed a small synthetic ad service for integration with lesson search. It us
 **Resume bullet draft** — Built a contextual ad auction and replay for 50 synthetic advertisers, reducing early budget depletion from 98.7% to 19.3% with pacing and serving the Docker demo at 3.70 ms HTTP p99 over 1,000 requests at 50 QPS.
 
 **Real-data resume bullet draft** — Benchmarked CTR models on 3.62M Criteo ad impressions using day-disjoint splits. DeepFM lowered LogLoss by 5.31% and raised AUC from 0.7369 to 0.7443 versus hashed logistic regression on 594K held-out impressions.
+
+**Real conversion serving follow-up** — Exported the three seven-day post-impression conversion models as checksum-validated NumPy artifacts and reused the training feature encoder in an HTTP service. The CPU container benchmark issued 12,000 requests at 50/200 QPS across 1/100 candidates, with zero errors and exact parity against offline predictions. The selected model achieved 7.32 ms HTTP p99 at 100 candidates and 200 QPS on a 1 CPU quota; scheduled-to-response p99 was 16.40 ms. I kept those boundaries separate and avoided claiming a production SLA from a short loopback run.
+
+**Serving resume bullet draft** — Deployed three real-data conversion models in a versioned CPU scoring service; validated exact offline/online prediction parity and completed 12K error-free HTTP requests, achieving 7.32 ms HTTP p99 at 200 QPS for 100 candidates/request under a 1 CPU container quota.

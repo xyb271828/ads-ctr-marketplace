@@ -74,3 +74,5 @@ A second real-data experiment uses Criteo Attribution timestamps to replay seven
 ## Real-model HTTP deployment
 
 The three real conversion models have a versioned `/score` service with shared training/serving feature hashing, artifact integrity checks and offline prediction parity. [Deployment and load-test protocol](reports/serving/README.md). Reproduce the CPU container benchmark through the **Real conversion HTTP benchmark** GitHub Actions workflow.
+
+Measured on an AMD EPYC GitHub runner with a **1 CPU / 1 GiB container**: the delay-aware model scored 100 candidates per request at 200 offered QPS with **7.32 ms HTTP p99** (16.40 ms scheduled-to-response p99). Across three models and 12 workload settings, **12,000/12,000 requests succeeded** with identical offline/online predictions. This is a short loopback benchmark; [full timing boundaries and results](reports/serving/README.md).

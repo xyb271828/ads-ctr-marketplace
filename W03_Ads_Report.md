@@ -73,3 +73,7 @@ The run used all **3,615,995 impressions** in five public [Criteo 1TB Click Logs
 ## Seven-day conversion extension
 
 The delayed-feedback benchmark adds a timestamp-aware label pipeline using Criteo Attribution. It compares recent incomplete labels, a mature-only cohort, and a likelihood using an empirical delay CDF estimated from mature training positives. Validation labels mature before testing. All methods share features, regularization and optimization. The delay-aware model improved held-out LogLoss by 0.66% versus the recent-label baseline. [Full experimental design, measurements and limits](reports/conversion/README.md).
+
+## Real conversion HTTP deployment
+
+A separate FastAPI scorer now serves all three frozen conversion models using the same feature encoder as training. A 1 CPU / 1 GiB Docker container on an AMD EPYC GitHub runner completed 12,000 paced HTTP requests across 1/100 candidates and 50/200 QPS with no errors or offline prediction mismatches. At 100 candidates and 200 QPS, the delay-aware model achieved 7.32 ms HTTP p99 and 16.40 ms scheduled-to-response p99; scorer-only p99 was 0.77 ms. This is a short loopback workload rather than a sustained production SLA. [Complete protocol, hardware, model version and measurements](reports/serving/README.md).

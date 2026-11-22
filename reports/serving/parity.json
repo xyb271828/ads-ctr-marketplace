@@ -1,0 +1,8 @@
+{
+  "rows": 2000,
+  "max_absolute_error": {
+    "naive_recent": 0.0,
+    "mature_only": 0.0,
+    "delay_likelihood": 0.0
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "format": 1,
+  "fields": [
+    "campaign",
+    "cat1",
+    "cat2",
+    "cat3",
+    "cat4",
+    "cat5",
+    "cat6",
+    "cat7",
+    "cat8",
+    "cat9"
+  ],
+  "models": [
+    "naive_recent",
+    "mature_only",
+    "delay_likelihood"
+  ],
+  "buckets": 65536,
+  "alternate_sign": false,
+  "weights_sha256": "a8fa147270776fbcdaef7259285fa23817be4370abdcf827396295e02d8e43f2",
+  "source_sha256": "94ac7a465564349bc7ba008602211d5990a3c53cc133abc0aadef61ea2391a98",
+  "target": "conversion within 7 days after impression; row-weighted exposure labels",
+  "selected_model": "delay_likelihood",
+  "training_cutoff": 1202399
+}
