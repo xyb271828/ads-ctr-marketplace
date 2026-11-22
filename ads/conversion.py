@@ -11,11 +11,11 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 from scipy.special import expit
-from sklearn.feature_extraction import FeatureHasher
 from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import average_precision_score
 
 from ads.calibration import summarize, pointwise_loss
+from ads.conversion_serving import export, transform
 
 DAY = 86400
 FEATURES = ['campaign', *[f'cat{i}' for i in range(1, 10)]]
@@ -123,12 +123,11 @@ def run(source, output, modulus=10, seed=42):
     prior = float(y_mature.mean())
     if not 0 < prior < 1:
         raise ValueError('Need both classes in mature training')
-    tokens = frame[FEATURES].astype(str)
-    hasher = FeatureHasher(n_features=2**16, input_type='string', alternate_sign=False)
-    x = hasher.transform((f'{name}={value}' for name,value in zip(FEATURES,row))
-                         for row in tokens.itertuples(index=False,name=None))
+    records = frame[FEATURES].to_dict('records')
+    x = transform(records)
     xt, xv, xe = x[train], x[valid], x[test]
     optimizers = {}
+    parameters = {}
     validation_predictions = {}
     test_predictions = {}
     for name, design, labels in [('naive_recent',xt,y_train), ('mature_only',x[mature],y_mature)]:
@@ -139,6 +138,7 @@ def run(source, output, modulus=10, seed=42):
         initial = np.r_[model.coef_.ravel(), model.intercept_]
         fitted = minimize(delayed_objective, initial, args=(design, labels, np.ones(len(labels))),
                           jac=True, method='L-BFGS-B', options={'maxiter':150, 'ftol':1e-8})
+        parameters[name] = fitted.x.copy()
         optimizers[name] = {'success':bool(fitted.success),'iterations':fitted.nit,
                             'message':str(fitted.message)}
         if name == 'naive_recent':
@@ -152,6 +152,7 @@ def run(source, output, modulus=10, seed=42):
                    method='L-BFGS-B', options={'maxiter':150, 'ftol':1e-8})
     if not np.isfinite(fit.fun):
         raise ValueError('Nonfinite delayed likelihood')
+    parameters['delay_likelihood'] = fit.x.copy()
     for name, design, predictions in [('validation',xv,validation_predictions),
                                        ('test',xe,test_predictions)]:
         predictions['delay_likelihood'] = expit(design @ fit.x[:-1]+fit.x[-1])
@@ -201,6 +202,13 @@ def run(source, output, modulus=10, seed=42):
              'fit_settings':{'hash_buckets':2**16,'regularization':1e-5,'maxiter':150,
                              'cdf_floor':.02,'baseline_optimizer':'L-BFGS-B',
                              'delay_model':'empirical global CDF from mature training positives'}}
+    test_records = [records[i] for i in np.flatnonzero(test)[:2000]]
+    reference = {name: p[:len(test_records)] for name, p in test_predictions.items()}
+    export(output/'artifacts', parameters,
+           {'source_sha256':source_digest, 'target':summary['target'],
+            'selected_model':selected, 'training_cutoff':int(cutoff)}, test_records, reference)
+    (output/'requests.json').write_text(json.dumps(
+        {'records':test_records, 'expected':{name:p.tolist() for name,p in reference.items()}})+'\n')
     (output/'results.json').write_text(json.dumps(summary,indent=2)+'\n')
     np.savez_compressed(output/'test_predictions.npz',labels=y_test,timestamp=t[test],
                         **test_predictions)

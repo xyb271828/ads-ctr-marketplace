@@ -70,3 +70,7 @@ Week 1 [Search](https://github.com/xyb271828/SciFact_Search) and Week 2 [Recomme
 A second real-data experiment uses Criteo Attribution timestamps to replay seven-day conversion labels at a training cutoff. On 103,581 later impressions, a delay-aware logistic likelihood reduced LogLoss by **0.66%** versus an otherwise comparable recent-label model. ECE decreased from **0.732 to 0.417 percentage points**. At the training cutoff, **11.66%** of eventual positive rows were still unobserved. Waiting seven days retained about half the training impressions.
 
 [Methods, source, charts and limitations](reports/conversion/README.md) · [Machine-readable results](reports/conversion/results.json)
+
+## Real-model HTTP deployment
+
+The three real conversion models have a versioned `/score` service with shared training/serving feature hashing, artifact integrity checks and offline prediction parity. [Deployment and load-test protocol](reports/serving/README.md). Reproduce the CPU container benchmark through the **Real conversion HTTP benchmark** GitHub Actions workflow.

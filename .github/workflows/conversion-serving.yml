@@ -1,0 +1,56 @@
+name: Real conversion HTTP benchmark
+on:
+  push:
+    branches: [main]
+    paths: ['ads/conversion*.py', 'tests/test_conversion*.py', 'Dockerfile.conversion', 'requirements-serving.txt', '.github/workflows/conversion-serving.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cpu-container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: pip install -r requirements-conversion.txt -r requirements-serving.txt
+      - run: python -m unittest discover -s tests -p 'test_conversion*.py' -v
+      - name: Download pinned real data and export frozen models
+        run: |
+          bash scripts/download_conversion.sh /tmp/criteo_attribution.tsv.gz
+          python -m ads.conversion /tmp/criteo_attribution.tsv.gz --output runs/conversion-serving > /tmp/training.log
+          cat runs/conversion-serving/artifacts/parity.json
+      - name: Build and deploy CPU container
+        run: |
+          docker build -f Dockerfile.conversion -t conversion-scoring .
+          docker run -d --name conversion --cpus=1 --memory=1g -p 127.0.0.1:8769:8000 -v "$PWD/runs/conversion-serving/artifacts:/app/models/conversion:ro" conversion-scoring
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8769/health; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:8769/health
+          lscpu > runs/conversion-serving/hardware.txt
+          docker inspect conversion > runs/conversion-serving/container.json
+      - name: Score real held-out requests at 50 and 200 QPS
+        run: python -m ads.conversion_load_test --fixture runs/conversion-serving/requests.json --output runs/conversion-serving/http-benchmark.json --requests 1000 --qps 50 200
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: real-conversion-serving
+          path: |
+            runs/conversion-serving/http-benchmark.json
+            runs/conversion-serving/hardware.txt
+            runs/conversion-serving/container.json
+            runs/conversion-serving/artifacts/
+            runs/conversion-serving/results.json
+      - name: Container logs and cleanup
+        if: always()
+        run: |
+          docker logs --tail 20 conversion || true
+          docker rm -f conversion || true
