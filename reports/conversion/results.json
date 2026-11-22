@@ -1,0 +1,566 @@
+{
+  "dataset": "Criteo Attribution",
+  "source_url": "https://huggingface.co/datasets/criteo/criteo-attribution-dataset/resolve/904188a63cbad78bee43cd26ff5ee4ac77903986/criteo_attribution_dataset.tsv.gz",
+  "source_sha256": "94ac7a465564349bc7ba008602211d5990a3c53cc133abc0aadef61ea2391a98",
+  "source_rows": 16468027,
+  "sampled_rows": 1646997,
+  "user_modulus": 10,
+  "seed": 42,
+  "target": "conversion within 7 days after impression; row-weighted exposure labels",
+  "horizon_seconds": 604800,
+  "cutoff": 1202399,
+  "test_start": 1893599,
+  "test_end_exclusive": 2066399,
+  "observation_end": 2671199,
+  "validation_end_exclusive": 1288799,
+  "selection_label_cutoff": 1893599,
+  "splits": {
+    "train_asof": {
+      "rows": 774200,
+      "positives": 20531
+    },
+    "train_mature": {
+      "rows": 393703,
+      "positives": 11723
+    },
+    "validation": {
+      "rows": 52337,
+      "positives": 1615
+    },
+    "test": {
+      "rows": 103581,
+      "positives": 3319
+    }
+  },
+  "features": [
+    "campaign",
+    "cat1",
+    "cat2",
+    "cat3",
+    "cat4",
+    "cat5",
+    "cat6",
+    "cat7",
+    "cat8",
+    "cat9"
+  ],
+  "validation": {
+    "naive_recent": {
+      "log_loss": 0.10732987432449455,
+      "ne": 0.7792709465289263,
+      "auc": 0.8461745399526809,
+      "ece": 0.004475929879798525,
+      "reliability": [
+        {
+          "bin": 0,
+          "n": 49396,
+          "predicted": 0.015716998056267868,
+          "observed": 0.01864523443193781
+        },
+        {
+          "bin": 1,
+          "n": 1825,
+          "predicted": 0.14003846081190843,
+          "observed": 0.15945205479452054
+        },
+        {
+          "bin": 2,
+          "n": 611,
+          "predicted": 0.24272489254707855,
+          "observed": 0.3158756137479542
+        },
+        {
+          "bin": 3,
+          "n": 262,
+          "predicted": 0.3442631201679815,
+          "observed": 0.3473282442748092
+        },
+        {
+          "bin": 4,
+          "n": 147,
+          "predicted": 0.4381719734249681,
+          "observed": 0.40816326530612246
+        },
+        {
+          "bin": 5,
+          "n": 67,
+          "predicted": 0.5407486542461742,
+          "observed": 0.5373134328358209
+        },
+        {
+          "bin": 6,
+          "n": 25,
+          "predicted": 0.6394097738027203,
+          "observed": 0.76
+        },
+        {
+          "bin": 7,
+          "n": 3,
+          "predicted": 0.721913756559398,
+          "observed": 1.0
+        },
+        {
+          "bin": 8,
+          "n": 1,
+          "predicted": 0.8048383947857264,
+          "observed": 1.0
+        }
+      ],
+      "pr_auc_average_precision": 0.24356122990049908,
+      "predicted_conversion_rate": 0.02655914816930494,
+      "observed_conversion_rate": 0.030857710606263255
+    },
+    "mature_only": {
+      "log_loss": 0.10826455508840029,
+      "ne": 0.7860572170633452,
+      "auc": 0.841066968211228,
+      "ece": 0.0023048596358397166,
+      "reliability": [
+        {
+          "bin": 0,
+          "n": 49021,
+          "predicted": 0.017164151922681566,
+          "observed": 0.018012688439648313
+        },
+        {
+          "bin": 1,
+          "n": 2048,
+          "predicted": 0.1407148061337084,
+          "observed": 0.14599609375
+        },
+        {
+          "bin": 2,
+          "n": 651,
+          "predicted": 0.24314198069217913,
+          "observed": 0.29339477726574503
+        },
+        {
+          "bin": 3,
+          "n": 330,
+          "predicted": 0.34398466685232043,
+          "observed": 0.296969696969697
+        },
+        {
+          "bin": 4,
+          "n": 152,
+          "predicted": 0.4403225363013259,
+          "observed": 0.48026315789473684
+        },
+        {
+          "bin": 5,
+          "n": 77,
+          "predicted": 0.5467084917928378,
+          "observed": 0.5714285714285714
+        },
+        {
+          "bin": 6,
+          "n": 50,
+          "predicted": 0.6554959434340915,
+          "observed": 0.48
+        },
+        {
+          "bin": 7,
+          "n": 7,
+          "predicted": 0.7244478006836373,
+          "observed": 0.2857142857142857
+        },
+        {
+          "bin": 8,
+          "n": 1,
+          "predicted": 0.8326098967459897,
+          "observed": 1.0
+        }
+      ],
+      "pr_auc_average_precision": 0.22666388445287106,
+      "predicted_conversion_rate": 0.029598416128447717,
+      "observed_conversion_rate": 0.030857710606263255
+    },
+    "delay_likelihood": {
+      "log_loss": 0.10701480037271267,
+      "ne": 0.7769833450742804,
+      "auc": 0.8460697497180956,
+      "ece": 0.0013245551316172618,
+      "reliability": [
+        {
+          "bin": 0,
+          "n": 48906,
+          "predicted": 0.017082297081121335,
+          "observed": 0.017625649204596573
+        },
+        {
+          "bin": 1,
+          "n": 2031,
+          "predicted": 0.1404827481670051,
+          "observed": 0.1447562776957164
+        },
+        {
+          "bin": 2,
+          "n": 731,
+          "predicted": 0.2426730902309332,
+          "observed": 0.253077975376197
+        },
+        {
+          "bin": 3,
+          "n": 325,
+          "predicted": 0.3428887047851024,
+          "observed": 0.3569230769230769
+        },
+        {
+          "bin": 4,
+          "n": 191,
+          "predicted": 0.44578805112969805,
+          "observed": 0.418848167539267
+        },
+        {
+          "bin": 5,
+          "n": 99,
+          "predicted": 0.5515154990949144,
+          "observed": 0.4444444444444444
+        },
+        {
+          "bin": 6,
+          "n": 42,
+          "predicted": 0.6423989820334758,
+          "observed": 0.5476190476190477
+        },
+        {
+          "bin": 7,
+          "n": 11,
+          "predicted": 0.7266569800813877,
+          "observed": 0.9090909090909091
+        },
+        {
+          "bin": 8,
+          "n": 1,
+          "predicted": 0.8297001267490636,
+          "observed": 1.0
+        }
+      ],
+      "pr_auc_average_precision": 0.24172826782701437,
+      "predicted_conversion_rate": 0.030286974356950092,
+      "observed_conversion_rate": 0.030857710606263255
+    }
+  },
+  "selected_on_validation": "delay_likelihood",
+  "test": {
+    "naive_recent": {
+      "log_loss": 0.11623442494366541,
+      "ne": 0.8193663398921581,
+      "auc": 0.826239657039803,
+      "ece": 0.007318284545232867,
+      "reliability": [
+        {
+          "bin": 0,
+          "n": 98177,
+          "predicted": 0.015977284314654578,
+          "observed": 0.021410309950395712
+        },
+        {
+          "bin": 1,
+          "n": 3697,
+          "predicted": 0.13968479075028364,
+          "observed": 0.17635921017040843
+        },
+        {
+          "bin": 2,
+          "n": 1085,
+          "predicted": 0.2395462299434477,
+          "observed": 0.2728110599078341
+        },
+        {
+          "bin": 3,
+          "n": 374,
+          "predicted": 0.3426075337461914,
+          "observed": 0.42245989304812837
+        },
+        {
+          "bin": 4,
+          "n": 170,
+          "predicted": 0.4401194510660032,
+          "observed": 0.4823529411764706
+        },
+        {
+          "bin": 5,
+          "n": 56,
+          "predicted": 0.5380339088909173,
+          "observed": 0.2857142857142857
+        },
+        {
+          "bin": 6,
+          "n": 20,
+          "predicted": 0.6372868365646414,
+          "observed": 0.65
+        },
+        {
+          "bin": 7,
+          "n": 2,
+          "predicted": 0.7653833338726607,
+          "observed": 0.0
+        }
+      ],
+      "pr_auc_average_precision": 0.19577641303257118,
+      "paired_vs_naive": {
+        "delta_log_loss": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "resampling_unit": "hour of impression",
+        "blocks": 49
+      },
+      "predicted_conversion_rate": 0.025026656429765183,
+      "observed_conversion_rate": 0.03204255606723241
+    },
+    "mature_only": {
+      "log_loss": 0.11661950944901245,
+      "ne": 0.8220808995576643,
+      "auc": 0.8207385577175567,
+      "ece": 0.0044238008527321656,
+      "reliability": [
+        {
+          "bin": 0,
+          "n": 97254,
+          "predicted": 0.01726623227175753,
+          "observed": 0.020883459806280463
+        },
+        {
+          "bin": 1,
+          "n": 4268,
+          "predicted": 0.13896364570428751,
+          "observed": 0.1541705716963449
+        },
+        {
+          "bin": 2,
+          "n": 1249,
+          "predicted": 0.24166541219508533,
+          "observed": 0.24979983987189752
+        },
+        {
+          "bin": 3,
+          "n": 469,
+          "predicted": 0.3400022036530918,
+          "observed": 0.34968017057569295
+        },
+        {
+          "bin": 4,
+          "n": 204,
+          "predicted": 0.4430110251050148,
+          "observed": 0.46568627450980393
+        },
+        {
+          "bin": 5,
+          "n": 101,
+          "predicted": 0.5454557156197158,
+          "observed": 0.36633663366336633
+        },
+        {
+          "bin": 6,
+          "n": 31,
+          "predicted": 0.635135985156588,
+          "observed": 0.6774193548387096
+        },
+        {
+          "bin": 7,
+          "n": 4,
+          "predicted": 0.7477591223530142,
+          "observed": 0.25
+        },
+        {
+          "bin": 8,
+          "n": 1,
+          "predicted": 0.8112435894916258,
+          "observed": 0.0
+        }
+      ],
+      "pr_auc_average_precision": 0.19057525596469183,
+      "paired_vs_naive": {
+        "delta_log_loss": 0.0003850845053470214,
+        "ci95": [
+          5.82698944328927e-05,
+          0.000751275631562468
+        ],
+        "resampling_unit": "hour of impression",
+        "blocks": 49
+      },
+      "predicted_conversion_rate": 0.02802217490259932,
+      "observed_conversion_rate": 0.03204255606723241
+    },
+    "delay_likelihood": {
+      "log_loss": 0.11546330878553458,
+      "ne": 0.8139305438753964,
+      "auc": 0.8263834201815168,
+      "ece": 0.004166605519493057,
+      "reliability": [
+        {
+          "bin": 0,
+          "n": 97084,
+          "predicted": 0.017255629091840103,
+          "observed": 0.02029170615137407
+        },
+        {
+          "bin": 1,
+          "n": 4215,
+          "predicted": 0.13901104115409232,
+          "observed": 0.15634638196915776
+        },
+        {
+          "bin": 2,
+          "n": 1416,
+          "predicted": 0.24122843732709082,
+          "observed": 0.2528248587570621
+        },
+        {
+          "bin": 3,
+          "n": 485,
+          "predicted": 0.3427575930353991,
+          "observed": 0.32577319587628867
+        },
+        {
+          "bin": 4,
+          "n": 248,
+          "predicted": 0.44330014656151745,
+          "observed": 0.4959677419354839
+        },
+        {
+          "bin": 5,
+          "n": 91,
+          "predicted": 0.5423379923550111,
+          "observed": 0.2967032967032967
+        },
+        {
+          "bin": 6,
+          "n": 35,
+          "predicted": 0.6432116387047573,
+          "observed": 0.6
+        },
+        {
+          "bin": 7,
+          "n": 6,
+          "predicted": 0.7286524923412753,
+          "observed": 0.5
+        },
+        {
+          "bin": 8,
+          "n": 1,
+          "predicted": 0.8015908985421698,
+          "observed": 0.0
+        }
+      ],
+      "pr_auc_average_precision": 0.19584561571582537,
+      "paired_vs_naive": {
+        "delta_log_loss": -0.0007711161581308473,
+        "ci95": [
+          -0.0009826544168604432,
+          -0.0005719916583520089
+        ],
+        "resampling_unit": "hour of impression",
+        "blocks": 49
+      },
+      "predicted_conversion_rate": 0.028537772757096874,
+      "observed_conversion_rate": 0.03204255606723241
+    }
+  },
+  "waiting_policy_diagnostics": [
+    {
+      "wait_days": 0,
+      "training_rows": 774200,
+      "hidden_fraction_of_eventual_positives": 0.11656626506024097
+    },
+    {
+      "wait_days": 1,
+      "training_rows": 718543,
+      "hidden_fraction_of_eventual_positives": 0.08302728836409279
+    },
+    {
+      "wait_days": 3,
+      "training_rows": 600502,
+      "hidden_fraction_of_eventual_positives": 0.03761025128973207
+    },
+    {
+      "wait_days": 7,
+      "training_rows": 393702,
+      "hidden_fraction_of_eventual_positives": 0.0
+    }
+  ],
+  "age_buckets": [
+    {
+      "age_days": [
+        0,
+        1
+      ],
+      "rows": 55656,
+      "eventual_positive_rows": 1729,
+      "hidden_positive_rows": 923
+    },
+    {
+      "age_days": [
+        1,
+        3
+      ],
+      "rows": 118041,
+      "eventual_positive_rows": 3484,
+      "hidden_positive_rows": 1108
+    },
+    {
+      "age_days": [
+        3,
+        7
+      ],
+      "rows": 206800,
+      "eventual_positive_rows": 6304,
+      "hidden_positive_rows": 678
+    },
+    {
+      "age_days": [
+        7,
+        1000
+      ],
+      "rows": 393703,
+      "eventual_positive_rows": 11723,
+      "hidden_positive_rows": 0
+    }
+  ],
+  "mature_positive_delay_quantiles_days": {
+    "p50": 0.6334953703703704,
+    "p90": 5.1158935185185195,
+    "p99": 6.878975462962965
+  },
+  "baseline_optimizers": {
+    "naive_recent": {
+      "success": true,
+      "iterations": 74,
+      "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+    },
+    "mature_only": {
+      "success": true,
+      "iterations": 92,
+      "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+    }
+  },
+  "optimizer": {
+    "success": true,
+    "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+    "iterations": 26,
+    "objective": 0.09387559676694243
+  },
+  "runtime_seconds": 34.436480748999884,
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "packages": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "scikit-learn": "1.8.0",
+      "pandas": "2.2.3"
+    },
+    "blas_threads": 1
+  },
+  "fit_settings": {
+    "hash_buckets": 65536,
+    "regularization": 1e-05,
+    "maxiter": 150,
+    "cdf_floor": 0.02,
+    "baseline_optimizer": "L-BFGS-B",
+    "delay_model": "empirical global CDF from mature training positives"
+  }
+}

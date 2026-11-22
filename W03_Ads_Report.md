@@ -69,3 +69,7 @@ The run used all **3,615,995 impressions** in five public [Criteo 1TB Click Logs
 - **Platt calibration** improved hashed LR LogLoss by **4.53%**, with unchanged AUC and ECE decreasing from 1.614 to 0.242 percentage points. Its LogLoss was 0.00111 above DeepFM. The benchmark reports paired intervals versus hashed LR, so the two leading variants have no direct paired interval in this run.
 - **Negative-sampling prior correction** lowered LogLoss from 0.15211 to 0.14244 and ECE from 3.632 to 1.397 percentage points, with unchanged AUC. Calibration conclusions refer to the published dataset’s sampled distribution.
 - **CPU batch scoring** took 90.6 ms for raw hashed LR and 368.9 ms for DeepFM across 594,104 already-encoded test rows in this run. These timers measure model batch scoring. Platt calibration and service overhead are outside the hashed LR timer. The results cover one held-out day and one shard per date, so neither the intervals nor the batch timing establish temporal stability or a serving SLA.
+
+## Seven-day conversion extension
+
+The delayed-feedback benchmark adds a timestamp-aware label pipeline using Criteo Attribution. It compares recent incomplete labels, a mature-only cohort, and a likelihood using an empirical delay CDF estimated from mature training positives. Validation labels mature before testing. All methods share features, regularization and optimization. The delay-aware model improved held-out LogLoss by 0.66% versus the recent-label baseline. [Full experimental design, measurements and limits](reports/conversion/README.md).

@@ -1,0 +1,19 @@
+name: Conversion delayed feedback
+on:
+  push:
+    branches: [main]
+    paths: ['ads/conversion.py', 'tests/test_conversion.py', '.github/workflows/conversion.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  labels-and-gradient:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: pip install -r requirements-conversion.txt
+      - run: python -m unittest discover -s tests -p test_conversion.py -v

@@ -64,3 +64,9 @@ A matching fictional sponsor can win at most one slot. The API accepts only topi
 [CTR notebook](W03_CTR.ipynb) · [Auction notebook](W03_Marketplace.ipynb) · [Technical report](W03_Ads_Report.md) · [Engineering log](weekly/Wk-03-EngLog.md)
 
 Week 1 [Search](https://github.com/xyb271828/SciFact_Search) and Week 2 [Recommendations](https://github.com/xyb271828/fari-recsys) run independently.
+
+## Conversion and delayed feedback
+
+A second real-data experiment uses Criteo Attribution timestamps to replay seven-day conversion labels at a training cutoff. On 103,581 later impressions, a delay-aware logistic likelihood reduced LogLoss by **0.66%** versus an otherwise comparable recent-label model. ECE decreased from **0.732 to 0.417 percentage points**. At the training cutoff, **11.66%** of eventual positive rows were still unobserved. Waiting seven days retained about half the training impressions.
+
+[Methods, source, charts and limitations](reports/conversion/README.md) · [Machine-readable results](reports/conversion/results.json)
